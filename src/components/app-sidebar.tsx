@@ -1,4 +1,5 @@
 import { currentUser } from '@clerk/nextjs/server'
+import Link from 'next/link'
 import {
   LayoutDashboard,
   FolderKanban,
@@ -36,7 +37,7 @@ export default async function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader>
-        <span className="text-xl font-bold">SaaSKit</span>
+        <Link href="/" className="text-xl font-bold">SaaSKit</Link>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
