@@ -1,11 +1,9 @@
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
-import { OrganizationSwitcher, UserButton } from '@clerk/nextjs'
+import { OrganizationSwitcher } from '@clerk/nextjs'
 import Link from 'next/link'
 import {
   LayoutDashboard,
-  FolderKanban,
-  Settings,
   CreditCard,
   Users,
 } from 'lucide-react'
@@ -21,18 +19,18 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
+import { SettingsNavItem } from '@/components/settings-nav-item'
+import { SidebarCollapseButton } from '@/components/sidebar-collapse-button'
 
 export default async function AppSidebar() {
   const { orgSlug } = await auth()
 
-  if (!orgSlug) redirect('/dashboard/org-selection')
+  if (!orgSlug) redirect('/org-selection')
 
   const navItems = [
     { title: 'Dashboard', href: `/dashboard/${orgSlug}`,          icon: LayoutDashboard },
-    { title: 'Projects',  href: `/dashboard/${orgSlug}/projects`,  icon: FolderKanban },
     { title: 'Members',   href: `/dashboard/${orgSlug}/members`,   icon: Users },
     { title: 'Billing',   href: `/dashboard/${orgSlug}/billing`,   icon: CreditCard },
-    { title: 'Settings',  href: `/dashboard/${orgSlug}/settings`,  icon: Settings },
   ]
 
   return (
@@ -42,7 +40,7 @@ export default async function AppSidebar() {
           hidePersonal={true}
           afterSelectOrganizationUrl="/dashboard/:slug"
           afterCreateOrganizationUrl="/dashboard/:slug"
-          afterLeaveOrganizationUrl="/dashboard/org-selection"
+          afterLeaveOrganizationUrl="/org-selection"
         />
       </SidebarHeader>
 
@@ -59,15 +57,14 @@ export default async function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+              <SettingsNavItem orgSlug={orgSlug} />
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter>
-        <div className="flex items-center gap-3 px-2 py-3">
-          <UserButton />
-        </div>
+      <SidebarFooter className="p-2">
+        <SidebarCollapseButton />
       </SidebarFooter>
     </Sidebar>
   )

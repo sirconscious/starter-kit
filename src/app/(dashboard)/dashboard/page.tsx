@@ -5,7 +5,7 @@ export default async function DashboardRootPage() {
   const { orgSlug } = await auth()
 
   if (!orgSlug) {
-    redirect('/dashboard/org-selection')
+    redirect('/org-selection')
   }
 
   redirect(`/dashboard/${orgSlug}`)
