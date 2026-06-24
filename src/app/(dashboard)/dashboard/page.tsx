@@ -1,22 +1,12 @@
-import { currentUser } from '@clerk/nextjs/server'
+import { auth } from '@clerk/nextjs/server'
+import { redirect } from 'next/navigation'
 
-export default async function DashboardPage() {
-  const user = await currentUser()
+export default async function DashboardRootPage() {
+  const { orgSlug } = await auth()
 
-  return (
-    <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-2xl font-bold">
-          Welcome back, {user?.firstName}!
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Here&apos;s what&apos;s happening with your projects.
-        </p>
-      </div>
+  if (!orgSlug) {
+    redirect('/dashboard/org-selection')
+  }
 
-      <p className="text-sm text-muted-foreground">
-        Customize your dashboard
-      </p>
-    </div>
-  )
+  redirect(`/dashboard/${orgSlug}`)
 }

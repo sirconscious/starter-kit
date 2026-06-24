@@ -1,4 +1,6 @@
-import { currentUser } from '@clerk/nextjs/server'
+import { auth } from '@clerk/nextjs/server'
+import { redirect } from 'next/navigation'
+import { OrganizationSwitcher, UserButton } from '@clerk/nextjs'
 import Link from 'next/link'
 import {
   LayoutDashboard,
@@ -7,7 +9,6 @@ import {
   CreditCard,
   Users,
 } from 'lucide-react'
-
 import {
   Sidebar,
   SidebarContent,
@@ -20,25 +21,31 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
-import { UserButton } from '@clerk/nextjs'
-
-const navItems = [
-  { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { title: 'Projects', href: '/dashboard/projects', icon: FolderKanban },
-  { title: 'Team', href: '/dashboard/team', icon: Users },
-  { title: 'Billing', href: '/dashboard/billing', icon: CreditCard },
-  { title: 'Pricing', href: '/pricing', icon: CreditCard },
-  { title: 'Settings', href: '/dashboard/settings', icon: Settings },
-]
 
 export default async function AppSidebar() {
-  const user = await currentUser()
+  const { orgSlug } = await auth()
+
+  if (!orgSlug) redirect('/dashboard/org-selection')
+
+  const navItems = [
+    { title: 'Dashboard', href: `/dashboard/${orgSlug}`,          icon: LayoutDashboard },
+    { title: 'Projects',  href: `/dashboard/${orgSlug}/projects`,  icon: FolderKanban },
+    { title: 'Members',   href: `/dashboard/${orgSlug}/members`,   icon: Users },
+    { title: 'Billing',   href: `/dashboard/${orgSlug}/billing`,   icon: CreditCard },
+    { title: 'Settings',  href: `/dashboard/${orgSlug}/settings`,  icon: Settings },
+  ]
 
   return (
     <Sidebar>
-      <SidebarHeader>
-        <Link href="/" className="text-xl font-bold">SaaSKit</Link>
+      <SidebarHeader className="p-3">
+        <OrganizationSwitcher
+          hidePersonal={true}
+          afterSelectOrganizationUrl="/dashboard/:slug"
+          afterCreateOrganizationUrl="/dashboard/:slug"
+          afterLeaveOrganizationUrl="/dashboard/org-selection"
+        />
       </SidebarHeader>
+
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>
@@ -46,7 +53,7 @@ export default async function AppSidebar() {
             <SidebarMenu>
               {navItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton disabled>
+                  <SidebarMenuButton render={<Link href={item.href} />}>
                     <item.icon className="size-4" />
                     <span>{item.title}</span>
                   </SidebarMenuButton>
@@ -56,15 +63,10 @@ export default async function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
       <SidebarFooter>
         <div className="flex items-center gap-3 px-2 py-3">
           <UserButton />
-          <div>
-            <p className="text-sm font-medium">{user?.fullName}</p>
-            <p className="text-xs text-muted-foreground">
-              {user?.emailAddresses[0]?.emailAddress}
-            </p>
-          </div>
         </div>
       </SidebarFooter>
     </Sidebar>
