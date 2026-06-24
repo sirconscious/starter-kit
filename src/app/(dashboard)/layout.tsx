@@ -2,9 +2,8 @@ import { cookies } from 'next/headers'
 import { UserButton } from '@clerk/nextjs'
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { Separator } from '@/components/ui/separator'
-import { Button } from '@/components/ui/button'
-import { Sun } from 'lucide-react'
 import AppSidebar from '@/components/app-sidebar'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 export default async function DashboardLayout({
   children,
@@ -23,9 +22,7 @@ export default async function DashboardLayout({
           <Separator orientation="vertical" className="h-4" />
           <span className="text-sm text-muted-foreground">Dashboard</span>
           <div className="ml-auto flex items-center gap-2">
-            <Button variant="ghost" size="icon">
-              <Sun className="size-4" />
-            </Button>
+            <ThemeToggle />
             <UserButton />
           </div>
         </header>
